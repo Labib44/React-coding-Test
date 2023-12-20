@@ -1,12 +1,39 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 const Problem1 = () => {
+    const [tasks, setTasks] = useState([]);
+    const [name, setName] = useState('');
+    const [status, setStatus] = useState('Active');
+    const [filter, setFilter] = useState('All');
 
-    const [show, setShow] = useState('all');
+    const submitTask = () => {
+        setTasks([...tasks, { name, status }]);
+        setName('');
+        setStatus('Active');
+    };
 
-    const handleClick = (val) =>{
-        setShow(val);
-    }
+    const filterTasks = (filterValue) => {
+        setFilter(filterValue);
+    };
+
+    const filteredTasks = tasks.filter((task) => {
+        if (filter === 'All') {
+            return true;
+        } else {
+            return task.status === filter;
+        }
+    }).sort((a, b) => {
+        // Custom sorting logic
+        if (a.status === 'Active' && b.status !== 'Active') {
+            return -1;
+        } else if (a.status === 'Completed' && b.status !== 'Completed') {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+
+   
 
     return (
 
@@ -16,38 +43,43 @@ const Problem1 = () => {
                 <div className="col-6 ">
                     <form className="row gy-2 gx-3 align-items-center mb-4">
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Name"/>
+                            <input type="text" value={name}s onChange={(e) => setName(e.target.value)} className="form-control" placeholder="Name" />
                         </div>
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Status"/>
+                            <input type="text" value={status} onChange={(e) => setStatus(e.target.value)} className="form-control" placeholder="Status" />
                         </div>
                         <div className="col-auto">
-                            <button type="submit" className="btn btn-primary">Submit</button>
+                            <button type="button" onClick={submitTask} className="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
                 <div className="col-8">
                     <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
                         <li className="nav-item">
-                            <button  className={`nav-link ${show==='all' && 'active'}`} type="button" onClick={()=>handleClick('all')}>All</button>
+                            <button className={`nav-link ${filter === 'All' && 'Active'}`} type="button" onClick={() => filterTasks('All')}>All</button>
                         </li>
                         <li className="nav-item">
-                            <button className={`nav-link ${show==='active' && 'active'}`} type="button" onClick={()=>handleClick('active')}>Active</button>
+                            <button className={`nav-link ${filter === 'Active' && 'Active'}`} type="button" onClick={() => filterTasks('Active')}>Active</button>
                         </li>
                         <li className="nav-item">
-                            <button  className={`nav-link ${show==='completed' && 'active'}`} type="button" onClick={()=>handleClick('completed')}>Completed</button>
+                            <button className={`nav-link ${filter === 'Completed' && 'Active'}`} type="button" onClick={() => filterTasks('Completed')}>Completed</button>
                         </li>
                     </ul>
                     <div className="tab-content"></div>
                     <table className="table table-striped ">
                         <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Status</th>
-                        </tr>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Status</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        
+                            {filteredTasks.map((task, index) => (
+                                <tr key={index}>
+                                    <td>{task.name}</td>
+                                    <td>{task.status}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
